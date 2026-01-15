@@ -1,24 +1,43 @@
+# =========================
 # Python
+# =========================
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
+*.egg-info/
 
-# Virtual environment
+# =========================
+# Virtual Environments
+# =========================
 venv/
 .venv/
 env/
 
-# Environment variables
+# =========================
+# Environment Variables
+# =========================
 .env
 
-# IDEs
+# =========================
+# Alembic
+# =========================
+alembic/__pycache__/
+
+# =========================
+# IDEs / Editors
+# =========================
 .vscode/
 .idea/
 
-# OS files
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
 
+# =========================
 # Logs
+# =========================
 *.log
