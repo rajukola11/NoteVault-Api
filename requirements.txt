@@ -6,3 +6,4 @@ python-dotenv
 psycopg2-binary
 passlib[argon2]
 alembic
+python-jose[cryptography]

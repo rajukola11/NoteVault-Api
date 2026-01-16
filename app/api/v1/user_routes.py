@@ -7,7 +7,7 @@ from app.models.user_model import UserModel
 from app.db.session import get_db
 from app.core.security import hash_password
 
-user_router = APIRouter()
+user_router = APIRouter(tags=["users"])
 
 @user_router.post("/users",status_code=status.HTTP_201_CREATED,response_model=UserRead)
 def create_a_user(user_data:UserCreate,db:Session=Depends(get_db)):

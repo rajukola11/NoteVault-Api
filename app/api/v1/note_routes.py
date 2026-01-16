@@ -4,8 +4,10 @@ from typing import List
 from app.schemas.note_schema import NoteCreate,NoteRead
 from app.db.session import get_db
 from app.models.note_model import NoteModel
+from app.core.dependencies import get_current_user
+from app.models.user_model import UserModel
 
-note_router=APIRouter()
+note_router=APIRouter(tags=["notes"])
 
 
 @note_router.get("/notes",response_model=List[NoteRead])
@@ -14,7 +16,7 @@ def get_all_notes(db:Session=Depends(get_db))->List[NoteRead]:
     return notes
 
 @note_router.post("/notes",status_code=status.HTTP_201_CREATED)
-def create_a_note(note_data:NoteCreate,db:Session=Depends(get_db)):
+def create_a_note(note_data:NoteCreate,db:Session=Depends(get_db),current_user:UserModel=Depends(get_current_user)):
     new_note = NoteModel(**note_data.model_dump())
     db.add(new_note)
     db.commit()
