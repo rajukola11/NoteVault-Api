@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.models.note_model import NoteModel
 from app.core.dependencies import get_current_user
 from app.models.user_model import UserModel
+from app.core.errors import not_found,forbidden
 
 note_router=APIRouter(tags=["notes"])
 
@@ -28,30 +29,19 @@ def create_a_note(note_data:NoteCreate,db:Session=Depends(get_db),current_user:U
 def get_a_note(note_id:int,db:Session=Depends(get_db),current_user:UserModel=Depends(get_current_user)):
     note = db.query(NoteModel).filter(NoteModel.id == note_id).first()
     if not note:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Note not found"
-        )
+        not_found("Note")
     if note.owner_id != current_user.id and current_user.role!="admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized"
-        )
+        forbidden("Not authorized")
     return note
 
 @note_router.put("/notes/{note_id}",response_model=NoteRead)
 def update_a_note(note_id:int,update_note_data:NoteCreate,db:Session=Depends(get_db),current_user:UserModel=Depends(get_current_user))->NoteRead:
     update_note = db.query(NoteModel).filter(NoteModel.id == note_id).first()
     if not update_note:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Note not found"
-        )
-    if update_note.owner_id!=current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cannot update others notes"
-        )
+        not_found("Note")
+    if update_note.owner_id!=current_user.id and current_user.role != "admin":
+        forbidden("Not authorized to update this note")
+        
     for key,value in update_note_data.model_dump(exclude_unset=True).items():
         setattr(update_note,key,value)
     db.commit()
@@ -62,15 +52,9 @@ def update_a_note(note_id:int,update_note_data:NoteCreate,db:Session=Depends(get
 def delete_a_note(note_id:int,db:Session=Depends(get_db),current_user:UserModel=Depends(get_current_user)):
     delete_task=db.query(NoteModel).filter(NoteModel.id == note_id).first()
     if not delete_task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Note not found"
-        )
+        not_found("Note")
     if current_user.role != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admins only"
-        )
+        forbidden("Only admins can delete notes")
 
     db.delete(delete_task)
     db.commit()

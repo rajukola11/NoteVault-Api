@@ -1,2 +1,3 @@
-from db.session import Base
-from app.models.note_model import NoteModel
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()

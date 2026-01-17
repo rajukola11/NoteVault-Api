@@ -19,13 +19,13 @@ This project is being developed in **phases** to ensure clean architecture, prop
 
 ## 🧱 Implemented Phases
 
-### ✅ Phase 1 — Notes CRUD
+### ✅ Notes CRUD
 - Create, read, update, delete notes
 - PostgreSQL-backed persistence
 - Proper schemas and error handling
 - No authentication
 
-### ✅ Phase 2 — Users
+### ✅ Users
 - User model with email and role
 - Secure password hashing (Argon2)
 - User CRUD endpoints
@@ -59,6 +59,9 @@ pip install -r requirements.txt
 4️⃣ Configure environment variables
 
 Create a .env file:
+DATABASE_URL=
+SECRET_KEY=
+
 
 DATABASE_URL=postgresql://username:password@localhost:5432/notevault
 
@@ -77,3 +80,12 @@ notevault
 users
 
 alembic_version
+
+
+## 🔐 Authentication & Authorization
+
+- JWT-based authentication (access tokens)
+- Role-based authorization (`user`, `admin`)
+- Ownership enforced on protected resources
+- Proper HTTP status codes (401, 403, 404)
+

@@ -6,6 +6,7 @@ from app.schemas.user_schema import UserCreate,UserRead
 from app.models.user_model import UserModel
 from app.db.session import get_db
 from app.core.security import hash_password
+from app.core.errors import not_found,conflict
 
 user_router = APIRouter(tags=["users"])
 
@@ -13,11 +14,7 @@ user_router = APIRouter(tags=["users"])
 def create_a_user(user_data:UserCreate,db:Session=Depends(get_db)):
     existing_user = db.query(UserModel).filter(UserModel.email==user_data.email).first()
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered",
-        )
-
+        conflict("Email already registered")
     new_user=UserModel(
         email=user_data.email,
         hashed_password=hash_password(user_data.password),
@@ -32,10 +29,7 @@ def create_a_user(user_data:UserCreate,db:Session=Depends(get_db)):
 def get_a_user(user_id:int,db:Session=Depends(get_db)):
     user = db.query(UserModel).filter(UserModel.id == user_id).first()
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+        not_found("User")
     return user
 
 @user_router.get("/users",response_model=List[UserRead])
